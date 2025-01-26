@@ -37,7 +37,7 @@ private:
 
 	struct DrawCommand {
 		bool renderThrough = false;
-		SDK::Primitive primitive = SDK::Primitive::Linestrip;
+		SDK::Primitive primitive = SDK::Primitive::LineList;
 		std::vector<Vertex> vertexBuffer = {};
 
 		DrawCommand() {
@@ -46,7 +46,7 @@ private:
 
 		void reset() {
 			renderThrough = false;
-			primitive = SDK::Primitive::Linestrip;
+			primitive = SDK::Primitive::LineList;
 			vertexBuffer.clear();
 		}
 	};

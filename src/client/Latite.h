@@ -53,7 +53,7 @@ public:
 	Latite() = default;
 	~Latite() = default;
 
-	static constexpr std::string_view version = "v2.3.3";
+	static constexpr std::string_view version = "v2.4.0";
 	HINSTANCE dllInst = NULL;
 	std::string gameVersion;
 
@@ -109,6 +109,9 @@ public:
 	[[nodiscard]] SDK::Font* getFont();
 
 	void fetchLatiteUsers();
+	std::wstring GetCurrentModuleFilePath(HMODULE hModule);
+	std::string fetchLatestGitHash();
+	std::string calcCurrentDLLHash();
 
 	void writeServerIP();
 

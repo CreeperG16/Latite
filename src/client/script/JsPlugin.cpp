@@ -21,7 +21,33 @@ using namespace winrt::Windows::Web::Http;
 using namespace winrt::Windows::Web::Http::Filters;
 
 
-void JsPlugin::checkTrusted() {}
+void JsPlugin::checkTrusted() {
+	trusted = false;
+	std::string url = "https://raw.githubusercontent.com/Imrglop/Latite-Releases/refs/heads/main/script_hashes.txt";
+	HttpClient client;
+	winrt::Windows::Foundation::Uri uri(winrt::to_hstring(url));
+
+	HttpRequestMessage request(HttpMethod::Get(), uri);
+	request.Headers().Insert(winrt::to_hstring("User-Agent"), winrt::to_hstring("WinRTApp"));
+
+	HttpResponseMessage response = client.SendRequestAsync(request).get();
+	if (response.StatusCode() != HttpStatusCode::Ok) {
+		Logger::Info("Plugin trust check request failed: {}", static_cast<int>(response.StatusCode()));
+		return;
+	}
+
+	std::string stringResponse = to_string(response.Content().ReadAsStringAsync().get());
+	std::optional<std::wstring> currentHash = getHash(this->getPath());
+
+	std::istringstream stream(stringResponse);
+	std::string hash;
+	while (std::getline(stream, hash)) {
+		if (currentHash == util::StrToWStr(hash)) {
+			trusted = true;
+			return;
+		}
+	}
+}
 
 JsPlugin::JsPlugin(std::wstring const& relPath) {
 	this->path = this->path / relPath;
@@ -49,6 +75,9 @@ bool JsPlugin::load() {
 		JS::JsDisposeRuntime(this->runtime);
 		this->runtime = JS_INVALID_RUNTIME_HANDLE;
 	}
+
+	// Check plugin permissions
+	checkTrusted();
 	return mainScript != nullptr;
 }
 
@@ -221,8 +250,10 @@ std::optional<std::wstring> JsPlugin::getHash(std::filesystem::path const& main)
 
 	//iterate(std::filesystem::path(indexPath).parent_path());
 	if (hasRead) {
-		auto input = CryptographicBuffer::ConvertStringToBinary(toHash.str(), BinaryStringEncoding::Utf8);
-		auto hasher = HashAlgorithmProvider::OpenAlgorithm(util::StrToWStr(XOR_STRING("SHA256")));
+		auto str = toHash.str();
+		auto input = CryptographicBuffer::ConvertStringToBinary(str, BinaryStringEncoding::Utf8);
+		auto hasher = HashAlgorithmProvider::OpenAlgorithm(
+            winrt::Windows::Security::Cryptography::Core::HashAlgorithmNames::Sha256());
 		auto hashed = hasher.HashData(input);
 
 		auto htostr = CryptographicBuffer::EncodeToHexString(hashed);
@@ -230,4 +261,8 @@ std::optional<std::wstring> JsPlugin::getHash(std::filesystem::path const& main)
 		return htostr.c_str();
 	}
 	return std::nullopt;
+}
+
+bool JsPlugin::isTrusted() {
+	return trusted;
 }
