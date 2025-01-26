@@ -129,6 +129,38 @@ void MCDrawUtil3D::drawBox(AABB const& bb, d2d::Color const& color) {
 		Vec3(bb.higher.x, bb.higher.y, bb.higher.z), Vec3(bb.lower.x, bb.higher.y, bb.higher.z), color);
 }
 
+void MCDrawUtil3D::drawBox(AABB const& bb, d2d::Color const& color, float thickness) {
+	auto scn = screenContext;
+	auto tess = scn->tess;
+	
+	std::vector<std::tuple<Vec3, Vec3, Vec3, Vec3>> faces = {
+		// -Y
+		{ Vec3(bb.lower.x, bb.lower.y, bb.lower.z), Vec3(bb.higher.x, bb.lower.y, bb.lower.z),
+		  Vec3(bb.higher.x, bb.lower.y, bb.higher.z), Vec3(bb.lower.x, bb.lower.y, bb.higher.z) },
+		// +Y
+		{ Vec3(bb.lower.x, bb.higher.y, bb.lower.z), Vec3(bb.higher.x, bb.higher.y, bb.lower.z),
+		  Vec3(bb.higher.x, bb.higher.y, bb.higher.z), Vec3(bb.lower.x, bb.higher.y, bb.higher.z) },
+		// -Z
+		{ Vec3(bb.lower.x, bb.lower.y, bb.lower.z), Vec3(bb.higher.x, bb.lower.y, bb.lower.z),
+		  Vec3(bb.higher.x, bb.higher.y, bb.lower.z), Vec3(bb.lower.x, bb.higher.y, bb.lower.z) },
+		// +Z
+		{ Vec3(bb.lower.x, bb.lower.y, bb.higher.z), Vec3(bb.higher.x, bb.lower.y, bb.higher.z),
+		  Vec3(bb.higher.x, bb.higher.y, bb.higher.z), Vec3(bb.lower.x, bb.higher.y, bb.higher.z) },
+		// -X
+		{ Vec3(bb.lower.x, bb.lower.y, bb.lower.z), Vec3(bb.lower.x, bb.lower.y, bb.higher.z),
+		  Vec3(bb.lower.x, bb.higher.y, bb.higher.z), Vec3(bb.lower.x, bb.higher.y, bb.lower.z) },
+		// +X
+		{ Vec3(bb.higher.x, bb.lower.y, bb.lower.z), Vec3(bb.higher.x, bb.lower.y, bb.higher.z),
+		  Vec3(bb.higher.x, bb.higher.y, bb.higher.z), Vec3(bb.higher.x, bb.higher.y, bb.lower.z) }
+	};
+
+	for (auto&& [a, b, c, d] : faces) {
+		//fillQuad(a, b, c, d, color);
+
+		
+	}
+}
+
 void MCDrawUtil3D::flush() {
     SDK::MeshHelpers::renderMeshImmediately(screenContext, screenContext->tess, material);
 }

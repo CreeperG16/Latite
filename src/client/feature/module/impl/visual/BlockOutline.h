@@ -13,6 +13,8 @@ private:
 
 	ValueType outline = BoolValue(true);
 	ValueType outlineColor = ColorValue(0.f, 0.f, 0.f);
+	ValueType changeOutlineWidth = BoolValue(false);
+	ValueType outlineWidth = FloatValue(0.f, 1.f, .03125f);
 
 	ValueType overlay = BoolValue(false);
 	ValueType faceOverlay = BoolValue(false);

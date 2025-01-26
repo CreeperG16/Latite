@@ -19,6 +19,11 @@ BlockOutline::BlockOutline() : Module("BlockOutline", LocalizeString::get("clien
     addSetting("outlineColor", LocalizeString::get("client.module.blockOutline.outlineColor.name"),
                LocalizeString::get("client.module.blockOutline.outlineColor.desc"), this->outlineColor, "outline");
 
+	addSetting("changeOutlineWidth", LocalizeString::get("client.module.blockOutline.changeOutlineWidth.name"),
+			   LocalizeString::get("client.module.blockOutline.changeOutlineWidth.desc"), this->changeOutlineWidth, "outline")
+	addSetting("outlineWidth", LocalizeString::get("client.module.blockOutline.outlineWidth.name"),
+			   LocalizeString::get("client.module.blockOutline.outlineWidth.desc"), this->outlineWidth, "outlineWidth");
+
     addSetting("overlay", LocalizeString::get("client.module.blockOutline.overlay.name"),
                LocalizeString::get("client.module.blockOutline.overlay.desc"), this->overlay);
     addSetting("faceOverlay", LocalizeString::get("client.module.blockOutline.faceOverlay.name"),
@@ -49,8 +54,12 @@ void BlockOutline::onOutlineSelection(Event& evG) {
 	auto overlayCol = std::get<ColorValue>(overlayColor).getMainColor();
 
 	if (std::get<BoolValue>(outline)) {
-		dc.drawBox(ev.getBoundingBox(), outlineCol);
-		dc.flush();
+		if (std::get<BoolValue>(changeOutlineWidth)) {
+			
+		} else {
+			dc.drawBox(ev.getBoundingBox(), outlineCol);
+			dc.flush();
+		}
 	}
 
 	if (std::get<BoolValue>(overlay)) {
